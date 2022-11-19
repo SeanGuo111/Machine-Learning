@@ -3,6 +3,7 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 (X_train, y_train), (X_test, y_test) = keras.datasets.cifar10.load_data()
+print(len(tf.config.list_logical_devices()))
 
 # checking images shape
 X_train.shape, X_test.shape
