@@ -5,7 +5,7 @@
 # Check out "view value in data viewer" upon right clicking variable watcher
 
 # NOTE: This is similar to Andrew Ng's NN in most ways. It however uses ordinary gradient descent instead of fmincg optimizer, making it less accurate to a degree. 
-# It should use softmax, which guarantees that the prediction outputs add to 1, vs sigmoid, which gives independent probabilities which do not nescesarily add to 1.
+# It also uses softmax on the output, which guarantees that the prediction outputs add to 1, vs sigmoid, which gives independent probabilities which do not nescesarily add to 1.
 # Sigmoid better for when one output can have multiple labels, softmax better for when one output can have only one label (class)
 
 import numpy as np
@@ -133,6 +133,12 @@ def sigmoid(x: np.ndarray):
     """Returns the sigmoid function of a matrix"""
     return 1 / (1 + np.exp(-1 * x))
 
+def softmax(x: np.ndarray):
+    """Returns the softmax probabilities of a matrix, summed across each row (axis 1)"""
+    sum = np.sum(np.exp(x), axis=1).reshape(-1,1)
+    sum = np.tile(sum, (1, x.shape[1]))
+    return np.exp(x) / sum
+
 def get_regularization_cost_term(m, theta1, theta2, regularization_parameter):
     """Returns the regularization term for the cost function, evaluated with the regularization parameter lambda"""
     theta1_sum = np.sum(theta1[1:] ** 2)
@@ -170,7 +176,7 @@ def forward_propagation(input: np.ndarray, theta1: np.ndarray, theta2: np.ndarra
     #(Same ones column)
     a2 = np.hstack((ones_column, a2))
     z3 = a2 @ theta2
-    a3 = sigmoid(z3)
+    a3 = softmax(z3) # was originally sigmoid
 
     return a3, a2, a1
 
@@ -187,7 +193,7 @@ def back_propagation(a1: np.ndarray, a2: np.ndarray, a3: np.ndarray, y:np.ndarra
         # THETA 2 GRADIENT ------------------------------
         
         # Delta1 Calculation
-        delta3 = np.array([a3[training_example] - y[training_example]]) # 1 x 10
+        delta3 = np.array([a3[training_example] - y[training_example]]) # 1 x 10, accounts for both softmax and cross-entropy cost
         # Respect to Theta2 Connection Calculation
         pd_z3_respect_to_theta2 = a2[training_example].reshape(-1,1) # 26 x 1
         
