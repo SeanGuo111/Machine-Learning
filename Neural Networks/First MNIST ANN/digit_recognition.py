@@ -4,12 +4,14 @@
 # No need to do any unrolling nonsense in this, besides gradient check displaying
 # Check out "view value in data viewer" upon right clicking variable watcher
 
-# NOTE: This is similar to Andrew Ng's NN in most ways. It however uses ordinary gradient descent instead of fmincg optimizer, making it less accurate to a degree.
+# NOTE: This is similar to Andrew Ng's NN in most ways. It however uses ordinary gradient descent instead of fmincg optimizer, making it less accurate to a degree. 
+# It should use softmax, which guarantees that the prediction outputs add to 1, vs sigmoid, which gives independent probabilities which do not nescesarily add to 1.
+# Sigmoid better for when one output can have multiple labels, softmax better for when one output can have only one label (class)
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-# SETUP FUNCTIONS ==============================================================================================================================================================================
+#%% SETUP FUNCTIONS ==============================================================================================================================================================================
 def initialize_one_hot_encoded_y(x: np.ndarray):
     """Encodes the y values to binary vectors to represent categories."""
     array = np.zeros((x.shape[0], 10))
@@ -126,7 +128,7 @@ def generate_data(X, y, real_y, percent_training, percent_validation, percent_te
 
     return training_X, training_y, training_real_y, validation_X, validation_y, validation_real_y, testing_X, testing_y, testing_real_y
 
-# ANALYSIS FUNCTIONS ==============================================================================================================================================================================
+#%% ANALYSIS FUNCTIONS ==============================================================================================================================================================================
 def sigmoid(x: np.ndarray):
     """Returns the sigmoid function of a matrix"""
     return 1 / (1 + np.exp(-1 * x))
@@ -257,7 +259,7 @@ def gradient_descent(training_X: np.ndarray, training_y: np.ndarray, validation_
 
     return final_training_cost, final_validation_cost, theta1, theta2
 
-# UTILITY FUNCTIONS ==============================================================================================================================================================================
+#%% UTILITY FUNCTIONS ==============================================================================================================================================================================
 
 def graph_cost(epochs, training_cost, validation_cost, show_graph):
     """Graphs the cost of the neural network."""
@@ -317,7 +319,7 @@ def play(X, theta1, theta2, y):
     print(f"Integer: {random_correct} | Prediction: {output} | Correct: {random_correct == output}")
 
 
-# HYPERPARAMETERS ==============================================================================================================================================================================
+#%% HYPERPARAMETERS ==============================================================================================================================================================================
 
 num_labels = 10
 num_examples = 5000
@@ -333,11 +335,9 @@ regularization_parameter = 0
 
 show_graph = True # Global; can be accessed in gradient_descent()
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# EXECUTION OF CODE ==============================================================================================================================================================================
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#%% EXECUTION OF CODE ==============================================================================================================================================================================
+
 
 # LOAD DATA
 X: np.ndarray = np.loadtxt('C:\\Users\\swguo\\VSCode Projects\\Machine Learning\\Neural Networks\\First MNIST ANN\\digitsData.txt', delimiter = ',')
