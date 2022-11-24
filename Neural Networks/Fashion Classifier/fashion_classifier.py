@@ -21,7 +21,7 @@ def predict_image(data, labels, predictions, class_names, index):
     plt.imshow(data[index], cmap="Greys")
     plt.tick_params(left = False, labelleft = False, bottom = False, labelbottom = False)
     
-    expected_label = class_names[np.argmax(predictions[index])]
+    expected_label = class_names[labels[index]]
     predicted_label = class_names[np.argmax(predictions[index])]
     plt.title(f"Expected: {expected_label}\nPredicted: {predicted_label}")
 
@@ -62,4 +62,4 @@ test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=1)
 print("Test Accuracy: ", test_acc)
 
 test_predictions = model.predict(test_images)
-predict_image(test_images, test_labels, test_predictions, class_names, 0)
+predict_image(test_images, test_labels, test_predictions, class_names, 234)
