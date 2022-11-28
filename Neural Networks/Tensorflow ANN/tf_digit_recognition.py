@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 keras = tf.keras
@@ -44,6 +45,20 @@ def generate_data(X, y, real_y, percent_training, percent_validation, percent_te
     testing_real_y = combined_data[num_training + num_validation:num_training + num_validation + num_testing,410].tolist()
 
     return training_X, training_y, training_real_y, validation_X, validation_y, validation_real_y, testing_X, testing_y, testing_real_y
+
+def graph_cost_accuracy(returned_history, epochs):
+    """Graphs the cost and accuracy of the neural network."""
+    plt.xlabel("Epoch")
+    plt.ylabel("Cost")
+    plt.title("Training and Validation Cost vs. Epochs")
+
+    plt.plot(np.arange(epochs), returned_history.history["loss"], label = "Training Cost")
+    plt.plot(np.arange(epochs), returned_history.history["val_loss"], label = "Validation Cost")
+    plt.plot(np.arange(epochs), returned_history.history["accuracy"], label = "Training Accuracy")
+    plt.plot(np.arange(epochs), returned_history.history["val_accuracy"], label = "Validation Accuracy")
+    plt.legend()
+    plt.show()
+
 #%% Running
 
 # numpy array
@@ -59,7 +74,23 @@ percent_validation = 0.2
 percent_testing = 0.1
 num_examples = 5000
 training_X, training_y, training_real_y, validation_X, validation_y, validation_real_y, testing_X, testing_y, testing_real_y = generate_data(X, y, real_y, percent_training, percent_validation, percent_testing, num_examples)
-print(training_y.shape)
-print(validation_y.shape)
-print(testing_y.shape)
 
+training_real_y = np.reshape(training_real_y, (-1, 1)) # transposed, 2d
+validation_real_y = np.reshape(validation_real_y, (-1, 1)) 
+testing_real_y = np.reshape(testing_real_y, (-1, 1)) 
+
+model = keras.Sequential([
+  keras.layers.Dense(80, input_shape=(400,), activation="sigmoid"),
+  keras.layers.Dense(25, activation="sigmoid"),
+  keras.layers.Dense(10, activation="softmax")
+])
+
+# Sparse cc uses integer labels, cc uses 1hot-encoded labels
+model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+
+epochs = 40
+returned_history = model.fit(training_X, training_real_y, validation_data=(validation_X, validation_real_y), epochs=epochs)
+test_loss, test_acc = model.evaluate(testing_X, testing_real_y, verbose=1)
+print("Test Accuracy: ", test_acc)
+
+graph_cost_accuracy(returned_history, epochs)
